@@ -90,8 +90,8 @@ __tls = ["dep:rustls-pemfile", "tokio/io-util"]
 # Enables common rustls code.
 # Equivalent to rustls-tls-manual-roots but shorter :)
 __rustls = ["dep:hyper-rustls", "dep:tokio-rustls", "dep:rustls", "__tls", "dep:rustls-pemfile", "dep:rustls-pki-types"]
-#__rustls-ring = ["hyper-rustls?/ring", "tokio-rustls?/ring", "rustls?/ring", "quinn?/ring"]
-__rustls-ring = ["rustls?/ring", "quinn?/ring"]
+__rustls-ring = ["hyper-rustls?/ring", "tokio-rustls?/ring", "rustls?/ring", "quinn?/ring"]
+#__rustls-ring = ["rustls?/ring", "quinn?/ring"]
 
 # When enabled, disable using the cached SYS_PROXIES.
 __internal_proxy_sys_no_cache = []
@@ -107,6 +107,7 @@ tower-service = "0.3"
 futures-core = { version = "0.3.28", default-features = false }
 futures-util = { version = "0.3.28", default-features = false }
 sync_wrapper = { version = "1.0", features = ["futures"] }
+backtrace = "=0.3.58"
 
 # Optional deps...
 
@@ -117,8 +118,8 @@ mime_guess = { version = "2.0", default-features = false, optional = true }
 
 [target.'cfg(not(all(target_arch = "wasm32", target_vendor = "unknown")))'.dependencies]
 #hyper = { git = "https://github.com/mvniekerk/hyper.git", branch = "wasix-v1.5.2", default-features = false, features = ["tcp", "http1", "http2", "client", "runtime"] }
-hyper = { git = "https://github.com/mvniekerk/hyper.git", branch = "wasix-v1.5.2", default-features = false, features = ["http1", "http2", "client"] }
-h2 = { git = "https://github.com/mvniekerk/h2.git", branch = "v0.4.0", optional = true }
+hyper = { git = "https://github.com/mvniekerk/hyper.git", branch = "wasix-v1.5.2", features = ["http1", "client"] }
+h2 = { git = "https://github.com/mvniekerk/h2.git", branch = "wasix-v0.4.7", optional = true }
 encoding_rs = { version = "0.8", optional = true }
 http-body = "1"
 http-body-util = "0.1"
@@ -136,15 +137,15 @@ rustls-pemfile = { version = "2", optional = true }
 
 ## default-tls
 hyper-tls = { version = "0.6", optional = true }
-native-tls-crate = { version = "0.2.10", optional = true, package = "native-tls" }
+native-tls-crate = { version = "0.2", optional = true, package = "native-tls" }
 tokio-native-tls = { version = "0.3.0", optional = true }
 
 # rustls-tls
-hyper-rustls = { version = "0.24.0", default-features = false, optional = true }
-rustls = { git = "https://github.com/wasix-org/rustls", branch = "v0.22.2", features = [], optional = true }
-tokio-rustls = { git = "https://github.com/wasix-org/tokio-rustls", branch= "main", optional = true }
+hyper-rustls = { git = "https://github.com/mvniekerk/hyper-rustls", branch= "v0.25.0", default-features = false, optional = true, features = ["http1", "tls12"] }
+rustls = { git = "https://github.com/wasix-org/rustls", branch = "v0.22.2", optional = true, default-features = false, features = ["tls12"] }
 rustls-pki-types = { version = "1.1.0", features = ["alloc"] ,optional = true }
-webpki-roots = { version = "0.24", optional = true }
+tokio-rustls = { git = "https://github.com/mvniekerk/tokio-rustls", branch= "0.25.0", optional = true, default-features = false, features = ["tls12"] }
+webpki-roots = { version = "0.26", optional = true }
 rustls-native-certs = { version = "0.6", optional = true }
 
 ## cookies
@@ -181,8 +182,7 @@ zstd_crate = { package = "zstd", version = "0.13" }
 doc-comment = "0.3"
 tokio = { git = "https://github.com/mvniekerk/tokio.git", branch = "wasix-1.42.0", default-features = false, features = ["macros", "rt-multi-thread"] }
 futures-util = { version = "0.3.28", default-features = false, features = ["std", "alloc"] }
-#rustls = { version = "0.23", default-features = false, features = ["ring"] }
-rustls = { git = "https://github.com/wasix-org/rustls", branch = "v0.22.2", default-features = false, features = [] }
+rustls = { git = "https://github.com/wasix-org/rustls", branch = "v0.22.2", default-features = false, features = ["ring"] }
 
 [target.'cfg(windows)'.dependencies]
 windows-registry = "0.2"
@@ -288,3 +288,10 @@ required-features = ["deflate", "stream"]
 name = "multipart"
 path = "tests/multipart.rs"
 required-features = ["multipart"]
+
+[patch.crates-io]
+libc = { git = "https://github.com/mvniekerk/libc", branch = "wasix-0.2.169" }
+tokio = { git = "https://github.com/mvniekerk/tokio.git", branch = "wasix-1.42.0" }
+hyper-util = { git = "https://github.com/mvniekerk/hyper-util", branch = "master" }
+h2 = { git = "https://github.com/mvniekerk/h2", branch = "wasix-v0.4.7" }
+hyper = { git = "https://github.com/mvniekerk/hyper.git", branch = "wasix-v1.5.2" }
